@@ -15,6 +15,8 @@ import { ReactMic } from 'react-mic';
 
 import { BrowserRouter, Route, Redirect } from 'react-router-dom';
 
+const context = new AudioContext();
+
 const socket = openSocket('http://localhost:8000');
 
 class VoiceTranslator extends React.Component {
@@ -27,7 +29,8 @@ class VoiceTranslator extends React.Component {
             translation: '',
             record: false,
             recordedBlobURL: '',
-            command: 'stop'
+            command: 'stop', 
+            returnedAudioRecordingBinaryFile: 'Nothing yet.',
 
         }
     }
@@ -37,7 +40,8 @@ class VoiceTranslator extends React.Component {
     componentDidMount() {
         socket.on('timer', timestamp => this.setState({ timestamp }));
         socket.on('azureAuth', accessToken => this.setState({ accessToken }));
-        socket.on('translationReturned', translation => this.setState({ translation }))
+        socket.on('translationReturned', translation => this.setState({ translation }));
+        socket.on('returnedAudioTranslaton', returnedAudioRecordingBinaryFile => this.setState({returnedAudioRecordingBinaryFile}));
     }
 
   
@@ -46,34 +50,41 @@ class VoiceTranslator extends React.Component {
         socket.emit('translate', `${__AZURE_CLIENT_SECRET__}`)
     }
 
+    componentDidUpdate() {
+        console.log('UPDATED', this.state)
 
 
-    // startRecording = () => {
-    //     this.setState({
-    //         record: true, command: 'start',
-    //     });
+        
+        
+    }
+
+    handlePlaybackTransaltion = () => {
+        context.decodeAudioData(this.state.returnedAudioRecordingBinaryFile, (buffer) => {
+            const source = context.createBufferSource();
+            source.buffer = buffer;
+            source.connect(context.destination);
+            // source.loop = loop;
+            source.start(0);
+            // source.onended = onended;
+            // this.playbackNode = source;
+            // resolve(source);
+          });
+
+    }
+
+    // play = (audioBuffer) => {
+    //     var source = context.createBufferSource();
+    //     source.buffer = audioBuffer;
+    //     source.connect( context.destination );
+    //     source.start(0);
 
     // }
-
-    // stopRecording = () => {
-    //     this.setState({
-    //         record: false, command: 'stop'
-    //     });
-
-    // }
-
-    // saveBlob = (url) => {
-    //     this.setState({ recordedBlobURL: url })
-    // }
-
-
-    // onStop(recordedBlob) {
-    //     console.log('recordedBlobl', recordedBlob)
-    //     socket.emit('wordsToBeTranslated', recordedBlob)
-
-    //     // console.log('recordedBlob is: ', recordedBlob);
-    // }
-
+    
+    
+    
+    
+    
+    
     onChange = (AudioRecorderChangeEvent) => {
         socket.emit('wordsToBeTranslated', AudioRecorderChangeEvent.audioData)
         console.log(AudioRecorderChangeEvent.audioData)
@@ -96,6 +107,7 @@ class VoiceTranslator extends React.Component {
                         </Button>
                         <h1>{this.state.recordedBlobURL !== '' ? `${this.state.recordedBlobURL}` : `Nothing Recorded yet`} </h1>
                         <h3>{this.state.translation}</h3>
+                        {/* <h3>{this.state.returnedAudioRecordingBinaryFile}</h3> */}
 
                         {/* <Recorder command={this.state.command} onStop={this.onStop} /> */}
 
@@ -109,12 +121,12 @@ class VoiceTranslator extends React.Component {
                             strokeColor="#000000"
                             backgroundColor="#FF4081" /> */}
                         < p > _____</p>
-                        {/* <Button raised color="primary" onClick={this.startRecording}>
+                        {/* {/* <Button raised color="primary" onClick={this.startRecording}>
                             Start Recording
-                        </Button>
-                        <Button raised color="primary" onClick={this.stopRecording}>
-                            Stop
                         </Button> */}
+                        <Button raised color="primary" onClick={this.handlePlaybackTransaltion}>
+                            Play Translation
+                        </Button> 
 
                     </div>
                 </BrowserRouter>
