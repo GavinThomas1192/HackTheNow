@@ -61,6 +61,7 @@ class VoiceTranslator extends React.Component {
             recordingSent: false,
             langTo: '',
             langFrom: '',
+            originalSpeach: '',
         }
     }
 
@@ -69,6 +70,7 @@ class VoiceTranslator extends React.Component {
     componentDidMount() {
         socket.on('timer', timestamp => this.setState({ timestamp }));
         socket.on('azureAuth', accessToken => this.setState({ accessToken }));
+        socket.on('originalSpeach', originalSpeach => this.setState({ originalSpeach: [...this.state.originalSpeach, originalSpeach] }));
         socket.on('translationReturned', translation => this.setState({ translation: [...this.state.translation, translation] }));
         socket.on('returnedAudioTranslaton', returnedAudioRecordingBinaryFile => this.handleIncomingBuffers(returnedAudioRecordingBinaryFile));
     }
@@ -177,12 +179,15 @@ class VoiceTranslator extends React.Component {
         console.log(AudioRecorderChangeEvent.audioData)
     }
 
-    selectLanguage =(langTo, langFrom) => {
-        this.setState({langTo, langFrom})
+    selectLanguage = ( to, from ) => {
+        console.log(to, from)
+        this.setState({langTo: to, langFrom: from})
     }
 
-    sendLanguageChoseToServer= () => {
-        socket.emit('languageChose', this.state.langFrom, this.state.langTo)
+    sendLanguageChoseToServer = () => {
+        console.log(this.state)
+        socket.emit('langaugeChoseFrom', this.state.langFrom)
+        socket.emit('langageChoseTo', this.state.langTo)
     }
 
 
@@ -195,35 +200,56 @@ class VoiceTranslator extends React.Component {
                 <BrowserRouter
                     forceRefresh={false}>
                     <div>
+                     <div style={{width: '50%', minWidth: '700px', margin: '0 auto'}}>
                     <div style={{padding: '10px'}} className={styles.root}>
                     <AppBar style={{backgroundColor: '#ffffffb3'}} position="static">
                         <Toolbar>
-                        <IconButton className={styles.menuButton} color="inherit" aria-label="Menu">
-                        </IconButton>
-                        <Typography type="title" color="inherit" style={{margin: 'auto', color: 'black'}}>
-                            TranslateMe
+                    
+                        <Typography type="title" color="inherit" style={{margin: 'auto', color: 'black', fontFamily: "'Megrim', cursive", size: "4em", weight: "200"}}>
+                            Babble
                         </Typography>
                         
                         </Toolbar>
                     </AppBar>
+                    </div>
+                    <div style={{padding: '0 20px'}}>
+                    <div style={{textAlign: 'center', width: '280px', margin: '0 auto'}}>
                     <SimpleSelect selectLanguage={this.selectLanguage}/>
-                    <Button raised color="primary" onClick={this.sendLanguageChoseToServer}>
+                    <Button style={{display: 'inline'}} raised color="primary" onClick={this.sendLanguageChoseToServer}>
                             Set Languages!
                         </Button>
-                    </div>
-                     
-                        <p>_____</p>
-                        <Button raised color="primary" onClick={this.handleGetTranslation}>
+                        </div>
+                        <hr style={{width: '50%', margin: '20px auto', borderColor: 'rgba(0, 0, 204, .3)'}}/>
+                        <div style={{textAlign: 'center'}}>
+                        <Button style={{margin: '0 auto'}} raised color="primary" onClick={this.handleGetTranslation}>
                             Start TRANSLATION!
                         </Button>
-                        <h1>{this.state.recordedBlobURL !== '' ? `${this.state.recordedBlobURL}` : `Nothing Recorded yet`} </h1>
+
+                        {this.state.originalSpeach !== '' ?
+                        <div>
+                        <h2>You asked for this... </h2>
+                        <h3>{this.state.originalSpeach}</h3>
+                        </div> : undefined }
+                        {this.state.translation !== '' ?
+                        <div>
+                        <h2>To be translated into this...</h2>
+
                         <h3>{this.state.translation}</h3>
+                        </div>
+                        : undefined }
                         {/* <h1>{this.state.average}</h1>
-                        <h1>{this.state.pauseArray}</h1> */}
-                        <h1>{this.state.toggleVoiceListening ? 'true' : 'false'}</h1>
+                        <h1>{this.state.pauseArray}</h1> 
+                         <h1>{this.state.toggleVoiceListening ? 'true' : 'false'}</h1> */}
                     
                         {/* stopRecording={this.state.toggleVoiceListening} startRecording={this.state.toggleVoiceListening} */}
                         <AudioRecorder startRecording={this.state.toggleVoiceListening} onRecordStart={this.analyzeVolume} onChange={(AudioRecorderChangeEvent) => this.onChange(AudioRecorderChangeEvent)} />
+
+                        <ReactMic
+                        record={this.state.toggleVoiceListening}
+                        className="sound-wave"
+                        // onStop={this.onStop}
+                        strokeColor="#000000"
+                        backgroundColor="#FF4081" />
 
 {/*                      
                         <Button raised color="primary" onClick={this.handlePlaybackTransaltion}>
@@ -240,6 +266,8 @@ class VoiceTranslator extends React.Component {
                          {/* <Button raised color="primary" onClick={this.setState({toggleVoiceListening: false})}>
                             STOP!
                         </Button>   */}
+                    </div>
+                    </div>
 
                     </div>
                 </BrowserRouter>

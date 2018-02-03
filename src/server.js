@@ -12,8 +12,11 @@ var file = 'test.wav';
 
 
 
+let langFromString;
+let langToString;
 
-var speechTranslateUrl = 'wss://dev.microsofttranslator.com/speech/translate?api-version=1.0&from=en&to=fr&features=texttospeech';
+var speechTranslateUrl;
+
 
 io.on('connection', (client) => {
     client.on('subscribeToTimer', (interval) => {
@@ -23,12 +26,19 @@ io.on('connection', (client) => {
         }, interval);
     });
 
-    client.on('languageChose', (langTo, langFrom) => {
-        
+    client.on('langaugeChoseFrom', (langFrom) => {
+        console.log('from', langFrom,)
+        langFromString = langFrom
+    })
+
+    client.on('langageChoseTo', (langTo) => {
+        console.log('to', langTo)
+        langToString = langTo
     })
 
 
     client.on('wordsToBeTranslated', blob => {
+        console.log(speechTranslateUrl)
         file = blob
 
         fs.writeFileSync('test.wav', blob);
@@ -82,6 +92,9 @@ io.on('connection', (client) => {
                     });
 
                     // connect to the service
+                    speechTranslateUrl = `wss://dev.microsofttranslator.com/speech/translate?api-version=1.0&from=${langFromString}&to=${langToString}&features=texttospeech`;
+                    console.log(speechTranslateUrl)
+
                     ws.connect(speechTranslateUrl, null, null, { 'Authorization': 'Bearer ' + accessToken });
 
                 }
@@ -92,6 +105,7 @@ io.on('connection', (client) => {
                 var result = JSON.parse(message.utf8Data)
                 console.log('type:%s recognition:%s translation:%s', result.type, result.recognition, result.translation);
                 client.emit('translationReturned', result.translation)
+                client.emit('originalSpeach', result.recognition)
             }
             else {
                 // text to speech binary audio data if features=texttospeech is passed in the url
