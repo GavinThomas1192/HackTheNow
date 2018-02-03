@@ -94,6 +94,7 @@ io.on('connection', (client) => {
                 // the format will be PCM 16bit 16kHz mono
                 console.log('LOOOK HERE', message);
                 fs.writeFileSync('response.wav', message.binaryData);
+                client.emit('returnedAudioTranslaton', message.binaryData)
 
             }
         }
