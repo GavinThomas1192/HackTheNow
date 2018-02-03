@@ -7,6 +7,12 @@ import openSocket from 'socket.io-client';
 
 import AudioRecorder from 'react-audio-recorder';
 
+import AppBar from 'material-ui/AppBar';
+import Toolbar from 'material-ui/Toolbar';
+import Typography from 'material-ui/Typography';
+import IconButton from 'material-ui/IconButton';
+import MenuIcon from 'material-ui-icons/Menu';
+
 
 import RecordRTC from 'recordrtc'
 import Recorder from 'react-recorder'
@@ -19,8 +25,22 @@ const context = new AudioContext();
 let microphone;
 let analyser;
 let javascriptNode;
+let pauseArray =[];
 
 const socket = openSocket('http://localhost:8000');
+
+const styles = {
+    root: {
+      width: '100%',
+    },
+    flex: {
+      flex: 1,
+    },
+    menuButton: {
+      marginLeft: -12,
+      marginRight: 20,
+    },
+  };
 
 class VoiceTranslator extends React.Component {
     constructor(props) {
@@ -36,8 +56,9 @@ class VoiceTranslator extends React.Component {
             returnedAudioRecordingBinaryFile: [],
             toggleVolumeReader: false,
             toggleVoiceListening: false,
-            average: ''
-
+            average: '',
+            pauseArray: '',
+            recordingSent: false
         }
     }
 
@@ -46,7 +67,7 @@ class VoiceTranslator extends React.Component {
     componentDidMount() {
         socket.on('timer', timestamp => this.setState({ timestamp }));
         socket.on('azureAuth', accessToken => this.setState({ accessToken }));
-        socket.on('translationReturned', translation => this.setState({ translation }));
+        socket.on('translationReturned', translation => this.setState({ translation: [...this.state.translation, translation] }));
         socket.on('returnedAudioTranslaton', returnedAudioRecordingBinaryFile => this.handleIncomingBuffers(returnedAudioRecordingBinaryFile));
     }
 
@@ -91,7 +112,6 @@ class VoiceTranslator extends React.Component {
                 audio: true
                 },
                 (stream) =>{
-                    // stream.getAudioTracks().forEach(function(track){track.stop();})
                 analyser = context.createAnalyser();
                 microphone = context.createMediaStreamSource(stream);
                 javascriptNode = context.createScriptProcessor(2048, 1, 1);
@@ -114,10 +134,20 @@ class VoiceTranslator extends React.Component {
                     }
 
                     var average = values / length;
-                    this.setState({average})
+                    // this.setState({average})
 
-                    if (M)
-                    {Math.round(average) > 30 ? this.setState({toggleVoiceListening: true}) : this.setState({toggleVoiceListening: false})}
+                    // this.setState({pauseArray: pauseArray.length})
+                    if (Math.round(average) < 50){
+
+                        pauseArray.push(average)
+                        if (pauseArray.length === 20) {
+                            this.setState({toggleVoiceListening: false})
+                        } 
+                    } else {
+                        pauseArray = []
+                        {!this.state.toggleVoiceListening ? this.setState({toggleVoiceListening: true, recordingSent: false}) : undefined}
+                    }
+                    // {Math.round(average) > 30 ? this.setState({toggleVoiceListening: true}) : this.setState({toggleVoiceListening: false})}
 
                     //  console.log(Math.round(average));
                 }
@@ -134,11 +164,14 @@ class VoiceTranslator extends React.Component {
 
     
     onChange = (AudioRecorderChangeEvent) => {
-        
-        {microphone ? microphone.disconnect(analyser) : undefined}
-        {javascriptNode ? javascriptNode.onaudioprocess = null : undefined}
-        
+        console.log('hitttttt',)
+        // {microphone && analyser ? microphone.disconnect() : undefined}
+        // {javascriptNode && analyser ? javascriptNode.onaudioprocess = null : undefined}
+
+        {!this.state.recordingSent ? 
         socket.emit('wordsToBeTranslated', AudioRecorderChangeEvent.audioData)
+        : undefined}
+        this.setState({recordingSent: !this.state.recordingSent ? true : false})
         console.log(AudioRecorderChangeEvent.audioData)
     }
 
@@ -152,6 +185,18 @@ class VoiceTranslator extends React.Component {
                 <BrowserRouter
                     forceRefresh={false}>
                     <div>
+                    <div style={{padding: '10px'}} className={styles.root}>
+                    <AppBar style={{backgroundColor: '#ffffffb3'}} position="static">
+                        <Toolbar>
+                        <IconButton className={styles.menuButton} color="inherit" aria-label="Menu">
+                        </IconButton>
+                        <Typography type="title" color="inherit" style={{margin: 'auto', color: 'black'}}>
+                            TranslateMe
+                        </Typography>
+                        
+                        </Toolbar>
+                    </AppBar>
+                    </div>
                      
                         <p>_____</p>
                         <Button raised color="primary" onClick={this.handleGetTranslation}>
@@ -159,13 +204,14 @@ class VoiceTranslator extends React.Component {
                         </Button>
                         <h1>{this.state.recordedBlobURL !== '' ? `${this.state.recordedBlobURL}` : `Nothing Recorded yet`} </h1>
                         <h3>{this.state.translation}</h3>
-                        <h1>{this.state.average}</h1>
+                        {/* <h1>{this.state.average}</h1>
+                        <h1>{this.state.pauseArray}</h1> */}
                         <h1>{this.state.toggleVoiceListening ? 'true' : 'false'}</h1>
                     
                         {/* stopRecording={this.state.toggleVoiceListening} startRecording={this.state.toggleVoiceListening} */}
                         <AudioRecorder startRecording={this.state.toggleVoiceListening} onRecordStart={this.analyzeVolume} onChange={(AudioRecorderChangeEvent) => this.onChange(AudioRecorderChangeEvent)} />
 
-                     
+{/*                      
                         <Button raised color="primary" onClick={this.handlePlaybackTransaltion}>
                             Play Translation
                         </Button> 
@@ -175,11 +221,11 @@ class VoiceTranslator extends React.Component {
 
                         <Button raised color="primary" onClick={this.analyzeVolume}>
                             START!
-                        </Button> 
+                        </Button>   */}
 
-                        {/* <Button raised color="primary" onClick={this.setState({toggleVoiceListening: false})}>
+                         {/* <Button raised color="primary" onClick={this.setState({toggleVoiceListening: false})}>
                             STOP!
-                        </Button>  */}
+                        </Button>   */}
 
                     </div>
                 </BrowserRouter>
