@@ -31,7 +31,7 @@ class SimpleSelect extends React.Component {
 
   handleChange = event => {
     this.setState({ [event.target.name]: event.target.value });
-    this.props.selectLanguage(this.state.langFrom, this.state.langTo)
+    this.props.selectLanguage(this.state.langTo, this.state.langFrom)
   };
 
 
