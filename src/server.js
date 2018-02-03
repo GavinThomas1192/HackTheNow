@@ -23,6 +23,10 @@ io.on('connection', (client) => {
         }, interval);
     });
 
+    client.on('languageChose', (langTo, langFrom) => {
+        
+    })
+
 
     client.on('wordsToBeTranslated', blob => {
         file = blob

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
 import openSocket from 'socket.io-client';
-
+import SimpleSelect from './selectMenu'
 import AudioRecorder from 'react-audio-recorder';
 
 import AppBar from 'material-ui/AppBar';
@@ -58,7 +58,9 @@ class VoiceTranslator extends React.Component {
             toggleVoiceListening: false,
             average: '',
             pauseArray: '',
-            recordingSent: false
+            recordingSent: false,
+            langTo: '',
+            langFrom: '',
         }
     }
 
@@ -175,6 +177,14 @@ class VoiceTranslator extends React.Component {
         console.log(AudioRecorderChangeEvent.audioData)
     }
 
+    selectLanguage =(langTo, langFrom) => {
+        this.setState({langTo, langFrom})
+    }
+
+    sendLanguageChoseToServer= () => {
+        socket.emit('languageChose', this.state.langFrom, this.state.langTo)
+    }
+
 
 
 
@@ -196,6 +206,10 @@ class VoiceTranslator extends React.Component {
                         
                         </Toolbar>
                     </AppBar>
+                    <SimpleSelect selectLanguage={this.selectLanguage}/>
+                    <Button raised color="primary" onClick={this.sendLanguageChoseToServer}>
+                            Set Languages!
+                        </Button>
                     </div>
                      
                         <p>_____</p>
