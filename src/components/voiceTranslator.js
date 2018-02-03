@@ -199,7 +199,6 @@ class VoiceTranslator extends React.Component {
             <div className="application">
                 <BrowserRouter
                     forceRefresh={false}>
-                    <div>
                      <div style={{width: '50%', minWidth: '700px', margin: '0 auto'}}>
                     <div style={{padding: '10px'}} className={styles.root}>
                     <AppBar style={{backgroundColor: '#ffffffb3'}} position="static">
