@@ -61,6 +61,7 @@ class VoiceTranslator extends React.Component {
             recordingSent: false,
             langTo: '',
             langFrom: '',
+            originalSpeach: '',
         }
     }
 
@@ -69,6 +70,7 @@ class VoiceTranslator extends React.Component {
     componentDidMount() {
         socket.on('timer', timestamp => this.setState({ timestamp }));
         socket.on('azureAuth', accessToken => this.setState({ accessToken }));
+        socket.on('originalSpeach', originalSpeach => this.setState({ originalSpeach: [...this.state.originalSpeach, originalSpeach] }));
         socket.on('translationReturned', translation => this.setState({ translation: [...this.state.translation, translation] }));
         socket.on('returnedAudioTranslaton', returnedAudioRecordingBinaryFile => this.handleIncomingBuffers(returnedAudioRecordingBinaryFile));
     }
@@ -219,8 +221,17 @@ class VoiceTranslator extends React.Component {
                         <Button raised color="primary" onClick={this.handleGetTranslation}>
                             Start TRANSLATION!
                         </Button>
-                        <h1>{this.state.recordedBlobURL !== '' ? `${this.state.recordedBlobURL}` : `Nothing Recorded yet`} </h1>
+                        {this.state.originalSpeach !== '' ?
+                        <div>
+                        <h2>You asked for this... </h2>
+                        <h3>{this.state.originalSpeach}</h3>
+                        </div> : undefined }
+                        {this.state.translation !== '' ?
+                        <div>
+                        <h2>To be translated into this...</h2>
                         <h3>{this.state.translation}</h3>
+                        </div>
+                        : undefined }
                         {/* <h1>{this.state.average}</h1>
                         <h1>{this.state.pauseArray}</h1> */}
                         <h1>{this.state.toggleVoiceListening ? 'true' : 'false'}</h1>
