@@ -228,6 +228,13 @@ class VoiceTranslator extends React.Component {
                         {/* stopRecording={this.state.toggleVoiceListening} startRecording={this.state.toggleVoiceListening} */}
                         <AudioRecorder startRecording={this.state.toggleVoiceListening} onRecordStart={this.analyzeVolume} onChange={(AudioRecorderChangeEvent) => this.onChange(AudioRecorderChangeEvent)} />
 
+                        <ReactMic
+                        record={this.state.toggleVoiceListening}
+                        className="sound-wave"
+                        // onStop={this.onStop}
+                        strokeColor="#000000"
+                        backgroundColor="#FF4081" />
+
 {/*                      
                         <Button raised color="primary" onClick={this.handlePlaybackTransaltion}>
                             Play Translation
