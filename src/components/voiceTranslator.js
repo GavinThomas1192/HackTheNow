@@ -35,6 +35,8 @@ class VoiceTranslator extends React.Component {
             command: 'stop', 
             returnedAudioRecordingBinaryFile: [],
             toggleVolumeReader: false,
+            toggleVoiceListening: false,
+            average: ''
 
         }
     }
@@ -63,7 +65,7 @@ class VoiceTranslator extends React.Component {
     }
 
     componentDidUpdate() {
-        console.log('UPDATED', this.state)
+        // console.log('UPDATED', this.state)
 
         {!this.state.returnedAudioRecordingBinaryFile ? undefined :
 
@@ -88,7 +90,7 @@ class VoiceTranslator extends React.Component {
                 navigator.getUserMedia({
                 audio: true
                 },
-                function(stream) {
+                (stream) =>{
                     // stream.getAudioTracks().forEach(function(track){track.stop();})
                 analyser = context.createAnalyser();
                 microphone = context.createMediaStreamSource(stream);
@@ -101,7 +103,7 @@ class VoiceTranslator extends React.Component {
                 analyser.connect(javascriptNode);
                 javascriptNode.connect(context.destination);
 
-                javascriptNode.onaudioprocess = function() {
+                javascriptNode.onaudioprocess = () => {
                     var array = new Uint8Array(analyser.frequencyBinCount);
                     analyser.getByteFrequencyData(array);
                     var values = 0;
@@ -112,8 +114,12 @@ class VoiceTranslator extends React.Component {
                     }
 
                     var average = values / length;
+                    this.setState({average})
 
-                     console.log(Math.round(average - 40));
+                    if (M)
+                    {Math.round(average) > 30 ? this.setState({toggleVoiceListening: true}) : this.setState({toggleVoiceListening: false})}
+
+                    //  console.log(Math.round(average));
                 }
 
         
@@ -128,8 +134,10 @@ class VoiceTranslator extends React.Component {
 
     
     onChange = (AudioRecorderChangeEvent) => {
-        microphone.disconnect(analyser)
-        javascriptNode.onaudioprocess = null;
+        
+        {microphone ? microphone.disconnect(analyser) : undefined}
+        {javascriptNode ? javascriptNode.onaudioprocess = null : undefined}
+        
         socket.emit('wordsToBeTranslated', AudioRecorderChangeEvent.audioData)
         console.log(AudioRecorderChangeEvent.audioData)
     }
@@ -151,14 +159,27 @@ class VoiceTranslator extends React.Component {
                         </Button>
                         <h1>{this.state.recordedBlobURL !== '' ? `${this.state.recordedBlobURL}` : `Nothing Recorded yet`} </h1>
                         <h3>{this.state.translation}</h3>
+                        <h1>{this.state.average}</h1>
+                        <h1>{this.state.toggleVoiceListening ? 'true' : 'false'}</h1>
                     
-
-                        <AudioRecorder onRecordStart={this.analyzeVolume} onChange={(AudioRecorderChangeEvent) => this.onChange(AudioRecorderChangeEvent)} />
+                        {/* stopRecording={this.state.toggleVoiceListening} startRecording={this.state.toggleVoiceListening} */}
+                        <AudioRecorder startRecording={this.state.toggleVoiceListening} onRecordStart={this.analyzeVolume} onChange={(AudioRecorderChangeEvent) => this.onChange(AudioRecorderChangeEvent)} />
 
                      
                         <Button raised color="primary" onClick={this.handlePlaybackTransaltion}>
                             Play Translation
                         </Button> 
+
+                        <p>_____</p>
+
+
+                        <Button raised color="primary" onClick={this.analyzeVolume}>
+                            START!
+                        </Button> 
+
+                        {/* <Button raised color="primary" onClick={this.setState({toggleVoiceListening: false})}>
+                            STOP!
+                        </Button>  */}
 
                     </div>
                 </BrowserRouter>
