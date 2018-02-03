@@ -177,12 +177,15 @@ class VoiceTranslator extends React.Component {
         console.log(AudioRecorderChangeEvent.audioData)
     }
 
-    selectLanguage =(langTo, langFrom) => {
-        this.setState({langTo, langFrom})
+    selectLanguage = ( to, from ) => {
+        console.log(to, from)
+        this.setState({langTo: to, langFrom: from})
     }
 
-    sendLanguageChoseToServer= () => {
-        socket.emit('languageChose', this.state.langFrom, this.state.langTo)
+    sendLanguageChoseToServer = () => {
+        console.log(this.state)
+        socket.emit('langaugeChoseFrom', this.state.langFrom)
+        socket.emit('langageChoseTo', this.state.langTo)
     }
 
 
