@@ -62,6 +62,7 @@ class VoiceTranslator extends React.Component {
             langTo: '',
             langFrom: '',
             originalSpeach: '',
+            triggerRemove: false,
         }
     }
 
@@ -87,6 +88,7 @@ class VoiceTranslator extends React.Component {
     }
     handleGetTranslation = () => {
         socket.emit('translate', `${__AZURE_CLIENT_SECRET__}`)
+        this.setState({triggerRemove: true})
     }
 
     componentDidUpdate() {
