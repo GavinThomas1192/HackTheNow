@@ -206,7 +206,7 @@ class VoiceTranslator extends React.Component {
                     <AppBar style={{backgroundColor: '#ffffffb3'}} position="static">
                         <Toolbar>
                     
-                        <Typography type="title" color="inherit" style={{margin: 'auto', color: 'black', fontFamily: "'Megrim', cursive", size: "4em", weight: "200"}}>
+                        <Typography type="title" color="inherit" style={{margin: 'auto', color: 'black', fontFamily: "'Megrim', cursive", fontSize: "4em", weight: "200"}}>
                             Babble
                         </Typography>
                         
@@ -222,6 +222,7 @@ class VoiceTranslator extends React.Component {
                         </div>
                         <hr style={{width: '50%', margin: '20px auto', borderColor: 'rgba(0, 0, 204, .3)'}}/>
                         <div style={{textAlign: 'center'}}>
+                        <AudioRecorder startRecording={this.state.toggleVoiceListening} onRecordStart={this.analyzeVolume} onChange={(AudioRecorderChangeEvent) => this.onChange(AudioRecorderChangeEvent)} />
                         <Button style={{margin: '0 auto'}} raised color="primary" onClick={this.handleGetTranslation}>
                             Start TRANSLATION!
                         </Button>
@@ -243,14 +244,6 @@ class VoiceTranslator extends React.Component {
                          <h1>{this.state.toggleVoiceListening ? 'true' : 'false'}</h1> */}
                     
                         {/* stopRecording={this.state.toggleVoiceListening} startRecording={this.state.toggleVoiceListening} */}
-                        <AudioRecorder triggerRemove={this.state.triggerRemove} startRecording={this.state.toggleVoiceListening} onRecordStart={this.analyzeVolume} onChange={(AudioRecorderChangeEvent) => this.onChange(AudioRecorderChangeEvent)} />
-
-                        <ReactMic
-                        record={this.state.toggleVoiceListening}
-                        className="sound-wave"
-                        // onStop={this.onStop}
-                        strokeColor="#000000"
-                        backgroundColor="#FF4081" />
 
 {/*                      
                         <Button raised color="primary" onClick={this.handlePlaybackTransaltion}>
@@ -268,6 +261,14 @@ class VoiceTranslator extends React.Component {
                             STOP!
                         </Button>   */}
                     </div>
+                        <div className={'wave-box'}>
+                        <ReactMic
+                        record={this.state.toggleVoiceListening}
+                        className="sound-wave"
+                        // onStop={this.onStop}
+                        strokeColor="#fff"
+                        backgroundColor="#4040D9" />
+                        </div>
                     </div>
 
                     </div>
