@@ -89,11 +89,12 @@ class VoiceTranslator extends React.Component {
     }
     handleGetTranslation = () => {
         socket.emit('translate', `${__AZURE_CLIENT_SECRET__}`)
-        this.setState({triggerRemove: true})
+        this.setState({triggerRemove: true, loading: true})
     }
 
     componentDidUpdate() {
         // console.log('UPDATED', this.state)
+        console.log(this.state.translation)
 
         {!this.state.returnedAudioRecordingBinaryFile ? undefined :
 
@@ -229,7 +230,7 @@ class VoiceTranslator extends React.Component {
                             Start TRANSLATION!
                         </Button>
 
-                        {this.state.triggerRemove ? <CircularIndeterminate/> : undefined}
+                        {this.state.translation < 1 ? <CircularIndeterminate/> : undefined}
                         
 
                         {this.state.originalSpeach !== '' ?
