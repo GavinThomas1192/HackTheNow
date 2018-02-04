@@ -5,6 +5,7 @@ import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
 import openSocket from 'socket.io-client';
 import SimpleSelect from './selectMenu'
+import CircularIndeterminate from './spinner';
 import AudioRecorder from 'react-audio-recorder';
 
 import AppBar from 'material-ui/AppBar';
@@ -221,9 +222,12 @@ class VoiceTranslator extends React.Component {
                         <hr style={{width: '50%', margin: '20px auto', borderColor: 'rgba(0, 0, 204, .3)'}}/>
                         <div style={{textAlign: 'center'}}>
                         <AudioRecorder startRecording={this.state.toggleVoiceListening} onRecordStart={this.analyzeVolume} onChange={(AudioRecorderChangeEvent) => this.onChange(AudioRecorderChangeEvent)} />
-                        <Button style={{margin: '0 auto'}} raised color="primary" onClick={this.handleGetTranslation}>
+                        <Button style={{margin: '0 auto 20px'}} raised color="primary" onClick={this.handleGetTranslation}>
                             Start TRANSLATION!
                         </Button>
+
+                        {this.state.triggerRemove ? <CircularIndeterminate/> : undefined}
+                        
 
                         {this.state.originalSpeach !== '' ?
                         <div>
@@ -260,6 +264,7 @@ class VoiceTranslator extends React.Component {
                         </Button>   */}
                     </div>
                         <div className={'wave-box'}>
+                        <hr style={{width: '100%', position: 'absolute', top: '41px', left: '0', border: '1px solid white', zIndex: '-1'}}/>
                         <ReactMic
                         record={this.state.toggleVoiceListening}
                         className="sound-wave"
