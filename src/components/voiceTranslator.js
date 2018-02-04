@@ -222,7 +222,7 @@ class VoiceTranslator extends React.Component {
                         </div>
                         <hr style={{width: '50%', margin: '20px auto', borderColor: 'rgba(0, 0, 204, .3)'}}/>
                         <div style={{textAlign: 'center'}}>
-                        <AudioRecorder startRecording={this.state.toggleVoiceListening} onRecordStart={this.analyzeVolume} onChange={(AudioRecorderChangeEvent) => this.onChange(AudioRecorderChangeEvent)} />
+                        <AudioRecorder triggerRemove={this.state.triggerRemove} startRecording={this.state.toggleVoiceListening} onRecordStart={this.analyzeVolume} onChange={(AudioRecorderChangeEvent) => this.onChange(AudioRecorderChangeEvent)} />
                         <Button style={{margin: '0 auto'}} raised color="primary" onClick={this.handleGetTranslation}>
                             Start TRANSLATION!
                         </Button>
