@@ -1,10 +1,30 @@
-# RatioAiHackathon
-AI Hackathon hosted by Ratio
+# Babble
+This is a real time language translator built with React, node, Socket.io, and Microsoft Cognitive Services. 
 
 Team Members include.
 
 * Megan Flood
 * Gavin Thomas
+
+### This project was built over the course of only 9 hours for Ratio/Globant's Hack The Now AI Hackathon hosted on Feb 4, 2018. 
+
+
+### To use this app you must have your own microsoft speach translator api keys..
+ * Git clone this repository
+
+    $ ```npm install ```
+
+    $ ``` cd ../src && node server.js ```
+
+    $ ``` npm run watch ```
+
+ * Create a .dev.env file within the ../src folder
+
+    ``` AZURE_CLIENT_SECRET = 'YOURSPEACHTRANSLATORAPIKEYHERE' ```
+
+     ``` NODE_ENV= 'NOTPRODUCTION' ```
+
+ * Navigate to localhost:8080 and profit!
 
 ## Available languages
 Afrikaans
