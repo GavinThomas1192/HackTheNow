@@ -62,6 +62,7 @@ class VoiceTranslator extends React.Component {
             langTo: '',
             langFrom: '',
             originalSpeach: '',
+            triggerRemove: false,
         }
     }
 
@@ -87,6 +88,7 @@ class VoiceTranslator extends React.Component {
     }
     handleGetTranslation = () => {
         socket.emit('translate', `${__AZURE_CLIENT_SECRET__}`)
+        this.setState({triggerRemove: true})
     }
 
     componentDidUpdate() {
@@ -241,7 +243,7 @@ class VoiceTranslator extends React.Component {
                          <h1>{this.state.toggleVoiceListening ? 'true' : 'false'}</h1> */}
                     
                         {/* stopRecording={this.state.toggleVoiceListening} startRecording={this.state.toggleVoiceListening} */}
-                        <AudioRecorder startRecording={this.state.toggleVoiceListening} onRecordStart={this.analyzeVolume} onChange={(AudioRecorderChangeEvent) => this.onChange(AudioRecorderChangeEvent)} />
+                        <AudioRecorder triggerRemove={this.state.triggerRemove} startRecording={this.state.toggleVoiceListening} onRecordStart={this.analyzeVolume} onChange={(AudioRecorderChangeEvent) => this.onChange(AudioRecorderChangeEvent)} />
 
                         <ReactMic
                         record={this.state.toggleVoiceListening}
