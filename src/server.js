@@ -27,7 +27,7 @@ io.on('connection', (client) => {
     });
 
     client.on('langaugeChoseFrom', (langFrom) => {
-        console.log('from', langFrom,)
+        console.log('from', langFrom, )
         langFromString = langFrom
     })
 
@@ -38,7 +38,7 @@ io.on('connection', (client) => {
 
 
     client.on('wordsToBeTranslated', blob => {
-        console.log(speechTranslateUrl)
+        console.log('url', speechTranslateUrl)
         file = blob
 
         fs.writeFileSync('test.wav', blob);
@@ -93,7 +93,7 @@ io.on('connection', (client) => {
 
                     // connect to the service
                     speechTranslateUrl = `wss://dev.microsofttranslator.com/speech/translate?api-version=1.0&from=${langFromString}&to=${langToString}&features=texttospeech`;
-                    console.log(speechTranslateUrl)
+                    console.log('speach url', speechTranslateUrl)
 
                     ws.connect(speechTranslateUrl, null, null, { 'Authorization': 'Bearer ' + accessToken });
 

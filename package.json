@@ -53,6 +53,7 @@
         "npmlog": "^4.1.2",
         "react": "^15.6.1",
         "react-audio-recorder": "file:../react-audio-recorder",
+        "react-audio-recorder-wavdownloader": "^2.0.5",
         "react-dom": "^15.6.2",
         "react-mic": "^9.0.0",
         "react-recorder": "^1.0.0",
