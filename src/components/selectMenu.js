@@ -21,7 +21,7 @@ const styles = theme => ({
 });
 
 class SimpleSelect extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props)
     this.state = {
       langFrom: '',
@@ -30,8 +30,10 @@ class SimpleSelect extends React.Component {
   }
 
   handleChange = event => {
-    this.setState({ [event.target.name]: event.target.value });
-    this.props.selectLanguage(this.state.langTo, this.state.langFrom)
+    this.setState({ [event.target.name]: event.target.value }, () => {
+      this.props.selectLanguage(this.state.langTo, this.state.langFrom)
+
+    });
   };
 
 
